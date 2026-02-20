@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.oceanview</groupId>
+    <artifactId>OceanViewResort</artifactId>
+    <version>1.0</version>
+    <packaging>war</packaging>
+    <name>Ocean View Resort</name>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            Jakarta Servlet API — scope is intentionally left as COMPILE (no <scope> tag).
+            Normally you would use <scope>provided</scope> when Tomcat is defined in Eclipse,
+            but since Eclipse shows "Target runtime Tomcat v11.0 is not defined", the API
+            is not on the build path. Leaving it as compile lets Maven supply it so the
+            project compiles cleanly. Tomcat will simply ignore the duplicate at runtime.
+        -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            MySQL Connector — managed entirely by Maven.
+            IMPORTANT: Remove the manual mysql-connector JAR from your Eclipse Build Path
+            (Project > Properties > Java Build Path > Libraries) — having both causes the
+            "Classpath entry will not be exported" warning and runtime errors.
+        -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.0.0</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>OceanViewResort</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
