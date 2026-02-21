@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+        
     <wb-module deploy-name="OceanViewResort">
+                
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+                
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-        <dependent-module archiveName="jakarta.servlet-api-6.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/src/main/webapp/WEB-INF/lib/jakarta.servlet-api-6.0.0.jar"/>
-        <dependent-module archiveName="mysql-connector-j-9.6.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/src/main/webapp/WEB-INF/lib/mysql-connector-j-9.6.0.jar"/>
+                
         <property name="context-root" value="OceanViewResort"/>
+                
         <property name="java-output-path" value="/OceanViewResort/build/classes"/>
+            
     </wb-module>
+    
 </project-modules>

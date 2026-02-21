@@ -1,13 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, com.oceanview.model.Reservation" %>
+<%@ page import="java.util.List, com.oceanview.model.Reservation"%>
 <%
-    // Auth guard
     if (session.getAttribute("user") == null) {
         response.sendRedirect("login.jsp");
         return;
     }
 
-    // Read data
     String staffName = (String) session.getAttribute("user");
     String msg       = request.getParameter("msg");
 
@@ -18,16 +16,13 @@
     int occupiedCount  = Math.min(totalBookings, 20);
     int availableCount = 20 - occupiedCount;
 
-    // Build room-grid HTML using StringBuilder
+    /* ── Room grid HTML ── */
     StringBuilder roomGrid = new StringBuilder();
     for (int i = 1; i <= 20; i++) {
         boolean occupied = false;
         if (list != null) {
             for (Reservation r : list) {
-                if (r.getReservationId() % 20 == i % 20) {
-                    occupied = true;
-                    break;
-                }
+                if (r.getReservationId() % 20 == i % 20) { occupied = true; break; }
             }
         }
         String cls  = occupied ? "oc" : "av";
@@ -38,37 +33,35 @@
         roomGrid.append("</div>");
     }
 
-    // Build table rows using StringBuilder
+    /* ── Table rows HTML ── */
     StringBuilder tableRows = new StringBuilder();
     if (list != null && !list.isEmpty()) {
         for (Reservation r : list) {
             String rt = (r.getRoomType() != null) ? r.getRoomType().toLowerCase() : "";
-            String bc = rt.contains("ocean") ? "bo"
-                      : rt.contains("suite") ? "bs"
-                      : rt.contains("deluxe") ? "bd" : "bst";
+            String bc = rt.contains("ocean") ? "bo" : rt.contains("suite") ? "bs" : rt.contains("deluxe") ? "bd" : "bst";
+            String st = r.getStatus();
+            if (st == null) st = "Active";
+            String sc = "Active".equals(st) ? "bg-success" : "Cancelled".equals(st) ? "bg-danger" : "bg-info";
             tableRows.append("<tr>");
             tableRows.append("<td><span class='tid'>#").append(r.getReservationId()).append("</span></td>");
             tableRows.append("<td><strong>").append(r.getGuestName()).append("</strong></td>");
-            tableRows.append("<td><span class='badge ").append(bc).append("'>");
-            tableRows.append(r.getRoomType()).append("</span></td>");
-            tableRows.append("<td style='color:var(--mist);font-size:0.83rem;'>");
-            tableRows.append(r.getCheckIn()).append("</td>");
-            tableRows.append("<td><a href='reservation?action=view&id=");
-            tableRows.append(r.getReservationId()).append("' class='tl'>");
+            tableRows.append("<td><span class='badge ").append(bc).append("'>").append(r.getRoomType()).append("</span></td>");
+            tableRows.append("<td><span class='badge ").append(sc).append("'>").append(st).append("</span></td>");
+            tableRows.append("<td style='color:var(--mist);font-size:0.83rem;'>").append(r.getCheckIn()).append("</td>");
+            tableRows.append("<td><a href='reservation?action=view&id=").append(r.getReservationId()).append("' class='tl'>");
             tableRows.append("View Bill <i class='fas fa-arrow-right' style='font-size:0.58rem;'></i>");
             tableRows.append("</a></td>");
             tableRows.append("</tr>");
         }
     }
 
-    // Success / empty message
     String successHtml = "";
     if ("success".equals(msg)) {
         successHtml = "<div class='success-banner'><i class='fas fa-check-circle'></i> Reservation saved successfully.</div>";
     }
     String emptyHtml = "";
     if (list == null || list.isEmpty()) {
-        emptyHtml = "<p style='color:var(--mist); font-size:0.86rem; padding:1.5rem;'>No reservations yet. <a href='add_reservation.jsp' style='color:var(--tide);'>Add the first booking</a>.</p>";
+        emptyHtml = "<p style='color:var(--mist);font-size:0.86rem;padding:1.5rem;'>No reservations yet. <a href='add_reservation.jsp' style='color:var(--tide);'>Add the first booking</a>.</p>";
     }
 %>
 <!DOCTYPE html>
@@ -147,6 +140,11 @@
                     <div class="ci"><i class="fas fa-list-ul"></i></div>
                     <span>All Bookings</span>
                 </a>
+                <a href="reports" class="menu-card">
+                    <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=75');"></div>
+                    <div class="ci"><i class="fas fa-chart-pie"></i></div>
+                    <span>Reports</span>
+                </a>
                 <a href="help.jsp" class="menu-card">
                     <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1473496169851-1ef9a9e0fc48?w=400&q=75');"></div>
                     <div class="ci"><i class="fas fa-book-open"></i></div>
@@ -160,10 +158,7 @@
 
             <!-- Room Status Grid -->
             <div class="panel">
-                <div class="ph">
-                    <i class="fas fa-hotel"></i>
-                    <h4>Live Room Status</h4>
-                </div>
+                <div class="ph"><i class="fas fa-hotel"></i><h4>Live Room Status</h4></div>
                 <div class="pb">
                     <div class="room-grid">
                         <%= roomGrid.toString() %>
@@ -183,10 +178,7 @@
 
             <!-- Reservations Table -->
             <div class="panel">
-                <div class="ph">
-                    <i class="fas fa-calendar-alt"></i>
-                    <h4>Recent Reservations</h4>
-                </div>
+                <div class="ph"><i class="fas fa-calendar-alt"></i><h4>Recent Reservations</h4></div>
                 <% if (list == null || list.isEmpty()) { %>
                     <%= emptyHtml %>
                 <% } else { %>
@@ -196,6 +188,7 @@
                             <th>#</th>
                             <th>Guest Name</th>
                             <th>Room Type</th>
+                            <th>Status</th>
                             <th>Check-In</th>
                             <th>Action</th>
                         </tr>
@@ -210,5 +203,6 @@
         </div>
     </div>
 </div>
+
 </body>
 </html>

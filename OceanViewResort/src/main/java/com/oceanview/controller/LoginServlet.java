@@ -25,15 +25,13 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        if (username == null || username.isBlank() ||
-            password == null || password.isBlank()) {
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
             request.setAttribute("error", "Username and password are required.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
 
         try (Connection conn = DBConnection.getConnection()) {
-
             String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, username.trim());
@@ -49,7 +47,6 @@ public class LoginServlet extends HttpServlet {
                 request.setAttribute("error", "Invalid username or password.");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendRedirect("login.jsp?error=db_error");
@@ -59,7 +56,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             response.sendRedirect("reservation?action=list");

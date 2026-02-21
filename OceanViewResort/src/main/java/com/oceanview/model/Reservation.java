@@ -12,6 +12,7 @@ public class Reservation {
     private Date   checkIn;
     private Date   checkOut;
     private double totalAmount;
+    private String status;
 
     public int    getReservationId()  { return reservationId; }
     public String getGuestName()      { return guestName; }
@@ -21,6 +22,7 @@ public class Reservation {
     public Date   getCheckIn()        { return checkIn; }
     public Date   getCheckOut()       { return checkOut; }
     public double getTotalAmount()    { return totalAmount; }
+    public String getStatus()         { return status; }
 
     public void setReservationId(int reservationId)    { this.reservationId = reservationId; }
     public void setGuestName(String guestName)         { this.guestName = guestName; }
@@ -30,4 +32,5 @@ public class Reservation {
     public void setCheckIn(Date checkIn)               { this.checkIn = checkIn; }
     public void setCheckOut(Date checkOut)             { this.checkOut = checkOut; }
     public void setTotalAmount(double totalAmount)     { this.totalAmount = totalAmount; }
+    public void setStatus(String status)               { this.status = status; }
 }

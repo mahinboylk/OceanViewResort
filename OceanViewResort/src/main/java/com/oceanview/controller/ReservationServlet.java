@@ -23,7 +23,7 @@ public class ReservationServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    // ── POST → add ────────────────────────────────────────────
+    // ── POST → add | cancel ────────────────────────────────────────────
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -33,6 +33,8 @@ public class ReservationServlet extends HttpServlet {
         String action = request.getParameter("action");
         if ("add".equals(action)) {
             addReservation(request, response);
+        } else if ("cancel".equals(action)) {
+            cancelReservation(request, response);
         } else {
             response.sendRedirect("reservation?action=list");
         }
@@ -50,9 +52,29 @@ public class ReservationServlet extends HttpServlet {
             viewReservation(request, response);
         } else if ("list".equals(action)) {
             listReservations(request, response);
+        } else if ("cancel".equals(action)) {
+            cancelReservation(request, response);
         } else {
             response.sendRedirect("reservation?action=list");
         }
+    }
+
+    // ── Check Room Availability ───────────────────────────────────────
+    private boolean isRoomAvailable(Connection conn, String roomType, Date checkIn, Date checkOut)
+            throws SQLException {
+        String sql = "SELECT COUNT(*) FROM reservations " +
+                     "WHERE room_type = ? " +
+                     "AND status = 'Active' " +
+                     "AND NOT (check_out <= ? OR check_in >= ?)";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, roomType);
+        ps.setDate(2, checkIn);
+        ps.setDate(3, checkOut);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) == 0;
+        }
+        return true;
     }
 
     // ── Add reservation ───────────────────────────────────────
@@ -83,9 +105,14 @@ public class ReservationServlet extends HttpServlet {
                 return;
             }
 
+            if (!isRoomAvailable(conn, roomType, checkIn, checkOut)) {
+                response.sendRedirect("add_reservation.jsp?error=unavailable");
+                return;
+            }
+
             String sql = "INSERT INTO reservations "
-                    + "(guest_name, address, contact_number, room_type, check_in, check_out) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)";
+                    + "(guest_name, address, contact_number, room_type, check_in, check_out, status) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, 'Active')";
 
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, guestName.trim());
@@ -106,7 +133,44 @@ public class ReservationServlet extends HttpServlet {
         }
     }
 
-    // ── View single reservation ───────────────────────────────
+    // ── Cancel reservation ───────────────────────────────────────
+    private void cancelReservation(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        String idParam = request.getParameter("id");
+        if (idParam == null || idParam.isBlank()) {
+            response.sendRedirect("reservation?action=list");
+            return;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(idParam.trim());
+        } catch (NumberFormatException e) {
+            response.sendRedirect("reservation?action=list");
+            return;
+        }
+
+        try (Connection conn = DBConnection.getConnection()) {
+
+            String sql = "UPDATE reservations SET status = 'Cancelled' WHERE reservation_id = ? AND status = 'Active'";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                response.sendRedirect("reservation?action=view&id=" + id + "&msg=cancelled");
+            } else {
+                response.sendRedirect("reservation?action=list&error=notfound");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendRedirect("reservation?action=list&error=true");
+        }
+    }
+
+    // ── View single reservation ───────────────────────────────────────
     private void viewReservation(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -142,6 +206,7 @@ public class ReservationServlet extends HttpServlet {
                 res.setRoomType(rs.getString("room_type"));
                 res.setCheckIn(rs.getDate("check_in"));
                 res.setCheckOut(rs.getDate("check_out"));
+                res.setStatus(rs.getString("status"));
 
                 long diff   = res.getCheckOut().getTime() - res.getCheckIn().getTime();
                 long nights = Math.max(1, diff / (1000L * 60 * 60 * 24));
@@ -176,6 +241,7 @@ public class ReservationServlet extends HttpServlet {
                 r.setGuestName(rs.getString("guest_name"));
                 r.setRoomType(rs.getString("room_type"));
                 r.setCheckIn(rs.getDate("check_in"));
+                r.setStatus(rs.getString("status"));
                 list.add(r);
             }
 
@@ -187,14 +253,14 @@ public class ReservationServlet extends HttpServlet {
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
-    // ── Helpers ───────────────────────────────────────────────
+    // ── LKR Room Rates ───────────────────────────────────────
     private double getRoomRate(String type) {
-        if (type == null) return 100.00;
+        if (type == null) return 25000.00;
         switch (type.toLowerCase().trim()) {
-            case "ocean view": return 300.00;
-            case "suite":      return 250.00;
-            case "deluxe":     return 150.00;
-            default:           return 100.00;
+            case "ocean view": return 75000.00;
+            case "suite":      return 55000.00;
+            case "deluxe":     return 35000.00;
+            default:           return 25000.00; // Standard
         }
     }
 

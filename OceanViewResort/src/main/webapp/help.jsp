@@ -21,7 +21,6 @@
     <div class="inner-shell">
         <div class="content-col">
 
-            <!-- Topbar -->
             <div class="topbar">
                 <div class="topbar-brand">
                     <span class="rn">
@@ -37,7 +36,7 @@
             </div>
 
             <div class="panel">
-                <div class="img-hero" style="background-image:url('https://images.unsplash.com/photo-1473496169851-1ef9a9e0fc48?w=1200&q=80&fit=crop'); height:175px;">
+                <div class="img-hero" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80&fit=crop'); height:175px;">
                     <div class="iho"><span class="ihl">Staff User Manual</span></div>
                 </div>
                 <div class="pb">
@@ -58,7 +57,8 @@
                             <h5><i class="fas fa-user-plus" style="margin-right:6px; color:var(--tide);"></i>Creating a New Reservation</h5>
                             <p>Click <strong>New Booking</strong> on the dashboard. Complete all guest
                                details &mdash; full name, address, contact number, room type, and stay
-                               dates &mdash; then click <strong>Confirm Booking</strong> to save.</p>
+                               dates &mdash; then click <strong>Confirm Booking</strong> to save.
+                               All prices are displayed in Sri Lankan Rupees (LKR).</p>
                         </div>
                     </div>
 
@@ -67,8 +67,9 @@
                         <div class="hc">
                             <h5><i class="fas fa-file-invoice-dollar" style="margin-right:6px; color:var(--tide);"></i>Generating a Bill</h5>
                             <p>From the dashboard, click <strong>View Bill</strong> next to any reservation.
-                               The total is calculated automatically from the room rate and number of nights.
-                               Click <strong>Print Bill</strong> to produce a physical receipt.</p>
+                               The total is calculated automatically in LKR from the room rate and number of nights.
+                               Click <strong>Print Bill</strong> to produce a physical receipt, or
+                               <strong>Cancel Booking</strong> to mark the reservation as cancelled.</p>
                         </div>
                     </div>
 
@@ -83,11 +84,23 @@
                         </div>
                     </div>
 
+                    <div class="help-item">
+                        <span class="hn">5</span>
+                        <div class="hc">
+                            <h5><i class="fas fa-chart-pie" style="margin-right:6px; color:var(--tide);"></i>Reports &amp; Analytics</h5>
+                            <p>Click <strong>Reports</strong> on the dashboard to view total revenue (LKR),
+                               occupancy rate, booking counts by status, monthly revenue trends for the last
+                               6 months, revenue breakdown by room type, and upcoming check-ins for the next
+                               7 days.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
         </div>
     </div>
 </div>
+
 </body>
 </html>
