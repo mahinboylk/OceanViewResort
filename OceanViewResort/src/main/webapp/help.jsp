@@ -65,16 +65,31 @@
                     <div class="help-item">
                         <span class="hn">3</span>
                         <div class="hc">
-                            <h5><i class="fas fa-file-invoice-dollar" style="margin-right:6px; color:var(--tide);"></i>Generating a Bill</h5>
-                            <p>From the dashboard, click <strong>View Bill</strong> next to any reservation.
-                               The total is calculated automatically in LKR from the room rate and number of nights.
-                               Click <strong>Print Bill</strong> to produce a physical receipt, or
-                               <strong>Cancel Booking</strong> to mark the reservation as cancelled.</p>
+                            <h5><i class="fas fa-bed" style="margin-right:6px; color:var(--tide);"></i>Room Types &amp; Rates</h5>
+                            <p>The system has <strong>5 room types</strong>, all priced in LKR per night:</p>
+                            <div style="margin-top:0.7rem; display:grid; grid-template-columns:1fr 1fr; gap:6px 20px;">
+                                <span><i class="fas fa-crown" style="color:var(--gold); margin-right:5px;"></i><strong>Presidential Suite</strong> &mdash; Rs. 150,000</span>
+                                <span><i class="fas fa-water" style="color:var(--tide); margin-right:5px;"></i><strong>Ocean View</strong> &mdash; Rs. 75,000</span>
+                                <span><i class="fas fa-star" style="color:var(--gold); margin-right:5px;"></i><strong>Suite</strong> &mdash; Rs. 55,000</span>
+                                <span><i class="fas fa-gem" style="color:var(--tide); margin-right:5px;"></i><strong>Deluxe</strong> &mdash; Rs. 35,000</span>
+                                <span><i class="fas fa-bed" style="color:var(--mist); margin-right:5px;"></i><strong>Standard</strong> &mdash; Rs. 25,000</span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="help-item">
                         <span class="hn">4</span>
+                        <div class="hc">
+                            <h5><i class="fas fa-file-invoice-dollar" style="margin-right:6px; color:var(--tide);"></i>Generating a Bill</h5>
+                            <p>From the dashboard, click <strong>View Bill</strong> next to any reservation.
+                               The total is calculated automatically in LKR from the room rate and number
+                               of nights. Click <strong>Print Bill</strong> to produce a physical receipt, or
+                               <strong>Cancel Booking</strong> to mark the reservation as cancelled.</p>
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <span class="hn">5</span>
                         <div class="hc">
                             <h5><i class="fas fa-hotel" style="margin-right:6px; color:var(--tide);"></i>Room Status Grid</h5>
                             <p>The dashboard shows live availability for all 20 rooms.
@@ -85,13 +100,13 @@
                     </div>
 
                     <div class="help-item">
-                        <span class="hn">5</span>
+                        <span class="hn">6</span>
                         <div class="hc">
                             <h5><i class="fas fa-chart-pie" style="margin-right:6px; color:var(--tide);"></i>Reports &amp; Analytics</h5>
                             <p>Click <strong>Reports</strong> on the dashboard to view total revenue (LKR),
                                occupancy rate, booking counts by status, monthly revenue trends for the last
-                               6 months, revenue breakdown by room type, and upcoming check-ins for the next
-                               7 days.</p>
+                               6 months, revenue breakdown by room type, and upcoming check-ins for the
+                               next 7 days.</p>
                         </div>
                     </div>
 
@@ -101,6 +116,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.oceanview.model.Reservation"%>
 <%
+    /* ── Auth guard ── */
     if (session.getAttribute("user") == null) {
         response.sendRedirect("login.jsp");
         return;
@@ -12,9 +13,10 @@
         return;
     }
 
-    long diff   = res.getCheckOut().getTime() - res.getCheckIn().getTime();
-    long nights = Math.max(1, diff / (1000L * 60 * 60 * 24));
-    String total  = String.format("%,.2f", res.getTotalAmount());
+    long diff    = res.getCheckOut().getTime() - res.getCheckIn().getTime();
+    long nights  = Math.max(1, diff / (1000L * 60 * 60 * 24));
+    String total = String.format("%,.2f", res.getTotalAmount());
+
     String status = res.getStatus();
     if (status == null) status = "Active";
 
@@ -49,7 +51,7 @@
                         <i class="fas fa-arrow-left"></i> Back
                     </a>
                     <% if (!"Cancelled".equals(status) && !"Completed".equals(status)) { %>
-                    <button onclick="confirmCancel('<%= res.getReservationId() %>')" class="btn btn-danger">
+                    <button onclick="confirmCancel(<%= res.getReservationId() %>)" class="btn btn-danger">
                         <i class="fas fa-times"></i> Cancel Booking
                     </button>
                     <% } %>
@@ -59,26 +61,28 @@
                 </div>
             </div>
 
-            <!-- Status alert banners -->
+            <!-- Post-cancel notification -->
             <% if ("cancelled".equals(cancelledMsg)) { %>
-            <div class="alert alert-danger no-print">
+            <div class="alert-banner alert-cancelled no-print">
                 <i class="fas fa-exclamation-circle"></i> This reservation has been successfully cancelled.
             </div>
             <% } %>
+
+            <!-- Status banners -->
             <% if ("Cancelled".equals(status)) { %>
-            <div class="alert alert-danger no-print">
-                <i class="fas fa-ban"></i> This reservation is <strong>CANCELLED</strong>.
+            <div class="alert-banner alert-cancelled">
+                <i class="fas fa-ban"></i> This reservation has been <strong>CANCELLED</strong>
             </div>
             <% } else if ("Completed".equals(status)) { %>
-            <div class="alert alert-success no-print">
-                <i class="fas fa-check-circle"></i> This reservation is <strong>COMPLETED</strong>.
+            <div class="alert-banner alert-completed">
+                <i class="fas fa-check-circle"></i> This reservation has been <strong>COMPLETED</strong>
             </div>
             <% } %>
 
             <!-- Receipt Card -->
             <div class="receipt-card">
 
-                <!-- Photo header -->
+                <!-- Photo header — .rph in style.css has the Unsplash background image + overlay -->
                 <div class="rph">
                     <div class="rhc">
                         <p class="ra">Galle, Sri Lanka &nbsp;&middot;&nbsp; oceanviewresort.lk</p>
@@ -96,13 +100,13 @@
                         <span class="dl"><i class="fas fa-info-circle" style="width:14px;"></i> Status</span>
                         <span class="dv">
                             <% if ("Active".equals(status)) { %>
-                            <span class="badge bd" style="background:#E8F5EE; color:#1B5E44;">Active</span>
+                                <span class="badge bo">Active</span>
                             <% } else if ("Cancelled".equals(status)) { %>
-                            <span class="badge" style="background:#FEE8E4; color:#8B2A1E;">Cancelled</span>
+                                <span class="badge" style="background:#FEE8E4; color:#8B2A1E;">Cancelled</span>
                             <% } else if ("Completed".equals(status)) { %>
-                            <span class="badge bo">Completed</span>
+                                <span class="badge bd">Completed</span>
                             <% } else { %>
-                            <%= status %>
+                                <%= status %>
                             <% } %>
                         </span>
                     </div>
@@ -136,15 +140,15 @@
                     </div>
                 </div>
 
-                <!-- Total -->
+                <!-- Total — .tb = navy bg, .tbl = label, .tam = gold amount -->
                 <div class="tb">
                     <div>
                         <p class="tbl">Total Payable</p>
-                        <p style="font-size:0.65rem; color:var(--sand); opacity:0.5; margin-top:2px;">
+                        <p style="font-size:0.65rem; color:rgba(245,236,215,0.5); margin-top:2px;">
                             Includes all taxes &amp; service charges
                         </p>
                     </div>
-                    <span class="tam">Rs. <%= total %></span>
+                    <span class="tam">LKR <%= total %></span>
                 </div>
 
                 <!-- Footer -->

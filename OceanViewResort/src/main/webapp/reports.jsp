@@ -1,36 +1,78 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.Map" %>
+<%@ page import="java.util.List, java.util.Map"%>
 <%
-    /* ── Auth guard ── */
     if (session.getAttribute("user") == null) {
         response.sendRedirect("login.jsp");
         return;
     }
 
-    /* ── Data from ReportsServlet ── */
-    double totalRevenue            = (Double)  request.getAttribute("totalRevenue");
-    int    activeReservations      = (Integer) request.getAttribute("activeReservations");
-    int    cancelledReservations   = (Integer) request.getAttribute("cancelledReservations");
-    int    completedReservations   = (Integer) request.getAttribute("completedReservations");
-    int    currentOccupancy        = (Integer) request.getAttribute("currentOccupancy");
-    double occupancyRate           = (Double)  request.getAttribute("occupancyRate");
+    /* ── Pull servlet attributes ── */
+    Double  totalRevenue          = (Double)  request.getAttribute("totalRevenue");
+    Integer activeReservations    = (Integer) request.getAttribute("activeReservations");
+    Integer cancelledReservations = (Integer) request.getAttribute("cancelledReservations");
+    Integer completedReservations = (Integer) request.getAttribute("completedReservations");
+    Integer currentOccupancy      = (Integer) request.getAttribute("currentOccupancy");
+    Double  occupancyRate         = (Double)  request.getAttribute("occupancyRate");
 
     @SuppressWarnings("unchecked")
     List<Map<String, Object>> upcomingCheckins  = (List<Map<String, Object>>) request.getAttribute("upcomingCheckins");
-    @SuppressWarnings("unchecked")
-    List<Map<String, Object>> recentRevenue     = (List<Map<String, Object>>) request.getAttribute("recentRevenue");
-    @SuppressWarnings("unchecked")
-    Map<String, Double>       revenueByRoomType = (Map<String, Double>)       request.getAttribute("revenueByRoomType");
 
-    String formattedRevenue = String.format("%,.0f", totalRevenue);
-    String formattedOccRate = String.format("%.1f", occupancyRate);
+    @SuppressWarnings("unchecked")
+    Map<String, Double> revenueByRoomType       = (Map<String, Double>) request.getAttribute("revenueByRoomType");
 
-    /* ── Upcoming check-ins table rows (StringBuilder avoids Invalid tag location) ── */
+    /* ── Null guards ── */
+    if (totalRevenue          == null) totalRevenue          = 0.0;
+    if (activeReservations    == null) activeReservations    = 0;
+    if (cancelledReservations == null) cancelledReservations = 0;
+    if (completedReservations == null) completedReservations = 0;
+    if (currentOccupancy      == null) currentOccupancy      = 0;
+    if (occupancyRate         == null) occupancyRate         = 0.0;
+
+    /* ── Pre-format total revenue ── */
+    String totalRevStr    = String.format("%,.0f", totalRevenue);
+    String occupancyStr   = String.format("%.1f", occupancyRate);
+    int    totalResCount  = activeReservations + cancelledReservations + completedReservations;
+
+    /* ── Revenue by room type — compute totals & bars using StringBuilder ── */
+    double revTotal = 0;
+    if (revenueByRoomType != null) {
+        for (Double v : revenueByRoomType.values()) revTotal += v;
+    }
+
+    StringBuilder revRows = new StringBuilder();
+    if (revenueByRoomType != null && !revenueByRoomType.isEmpty()) {
+        for (Map.Entry<String, Double> entry : revenueByRoomType.entrySet()) {
+            String rt  = entry.getKey();
+            double rev = entry.getValue();
+            double pct = revTotal > 0 ? (rev / revTotal * 100) : 0;
+            String bc  = rt.toLowerCase().contains("presidential") ? "bp"
+                       : rt.toLowerCase().contains("ocean") ? "bo"
+                       : rt.toLowerCase().contains("suite") ? "bs"
+                       : rt.toLowerCase().contains("deluxe") ? "bd"
+                       : "bst";
+            revRows.append("<tr>");
+            revRows.append("<td><span class='badge ").append(bc).append("'>").append(rt).append("</span></td>");
+            revRows.append("<td style='font-weight:600;'>LKR ").append(String.format("%,.0f", rev)).append("</td>");
+            revRows.append("<td>");
+            revRows.append("<div class='prog-wrap'><div class='prog-bar' style='width:").append(String.format("%.1f", pct)).append("%;'></div></div>");
+            revRows.append("<span style='font-size:0.75rem;color:var(--mist);margin-left:6px;'>").append(String.format("%.1f", pct)).append("%</span>");
+            revRows.append("</td>");
+            revRows.append("</tr>");
+        }
+    } else {
+        revRows.append("<tr><td colspan='3' style='text-align:center;color:var(--mist);padding:1.2rem;'>No revenue data available</td></tr>");
+    }
+
+    /* ── Upcoming check-ins table rows ── */
     StringBuilder checkinRows = new StringBuilder();
     if (upcomingCheckins != null && !upcomingCheckins.isEmpty()) {
         for (Map<String, Object> c : upcomingCheckins) {
-            String rt = (c.get("roomType") != null) ? c.get("roomType").toString().toLowerCase() : "";
-            String bc = rt.contains("ocean") ? "bo" : rt.contains("suite") ? "bs" : rt.contains("deluxe") ? "bd" : "bst";
+            String rt  = (c.get("roomType") != null) ? c.get("roomType").toString().toLowerCase() : "";
+            String bc  = rt.contains("presidential") ? "bp"
+                       : rt.contains("ocean")        ? "bo"
+                       : rt.contains("suite")        ? "bs"
+                       : rt.contains("deluxe")       ? "bd"
+                       :                               "bst";
             checkinRows.append("<tr>");
             checkinRows.append("<td><span class='tid'>#").append(c.get("reservationId")).append("</span></td>");
             checkinRows.append("<td><strong>").append(c.get("guestName")).append("</strong></td>");
@@ -42,43 +84,6 @@
         checkinRows.append("<tr><td colspan='4' style='text-align:center;color:var(--mist);padding:1.2rem;'>No upcoming check-ins in the next 7 days</td></tr>");
     }
 
-    /* ── Revenue by room type table rows ── */
-    StringBuilder revenueRows = new StringBuilder();
-    double grandTotal = 0;
-    if (revenueByRoomType != null) {
-        for (Double v : revenueByRoomType.values()) grandTotal += v;
-    }
-    if (revenueByRoomType != null && !revenueByRoomType.isEmpty()) {
-        for (Map.Entry<String, Double> entry : revenueByRoomType.entrySet()) {
-            String rt  = entry.getKey() != null ? entry.getKey().toLowerCase() : "";
-            String bc  = rt.contains("ocean") ? "bo" : rt.contains("suite") ? "bs" : rt.contains("deluxe") ? "bd" : "bst";
-            double pct = grandTotal > 0 ? (entry.getValue() / grandTotal * 100) : 0;
-            revenueRows.append("<tr>");
-            revenueRows.append("<td><span class='badge ").append(bc).append("'>").append(entry.getKey()).append("</span></td>");
-            revenueRows.append("<td style='font-weight:600;color:var(--ocean);'>Rs. ").append(String.format("%,.0f", entry.getValue())).append("</td>");
-            revenueRows.append("<td>");
-            revenueRows.append("<div class='pct-bar-wrap'><div class='pct-bar' style='width:").append(String.format("%.1f", pct)).append("%;'></div></div>");
-            revenueRows.append("<span style='font-size:0.75rem;color:var(--mist);'>").append(String.format("%.1f", pct)).append("%</span>");
-            revenueRows.append("</td>");
-            revenueRows.append("</tr>");
-        }
-    } else {
-        revenueRows.append("<tr><td colspan='3' style='text-align:center;color:var(--mist);padding:1.2rem;'>No revenue data available</td></tr>");
-    }
-
-    /* ── Recent revenue month rows ── */
-    StringBuilder monthRows = new StringBuilder();
-    if (recentRevenue != null && !recentRevenue.isEmpty()) {
-        for (Map<String, Object> m : recentRevenue) {
-            double rev = (Double) m.get("revenue");
-            monthRows.append("<tr>");
-            monthRows.append("<td style='font-weight:600;'>").append(m.get("month")).append("</td>");
-            monthRows.append("<td style='font-weight:600;color:var(--ocean);'>Rs. ").append(String.format("%,.0f", rev)).append("</td>");
-            monthRows.append("</tr>");
-        }
-    } else {
-        monthRows.append("<tr><td colspan='2' style='text-align:center;color:var(--mist);padding:1.2rem;'>No monthly data available</td></tr>");
-    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -99,148 +104,121 @@
             <!-- Topbar -->
             <div class="topbar">
                 <div class="topbar-brand">
-                    <span class="rn">
-                        <i class="fas fa-umbrella-beach" style="color:var(--gold); margin-right:8px;"></i>Ocean View Resort
-                    </span>
-                    <span class="wt">Reports &amp; Analytics</span>
+                    <span class="rn"><i class="fas fa-umbrella-beach" style="color:var(--gold); margin-right:8px;"></i>Ocean View Resort</span>
+                    <span class="wt">Management Reports</span>
                 </div>
                 <div class="topbar-actions">
-                    <a href="reservation?action=list" class="btn btn-ghost">
-                        <i class="fas fa-arrow-left"></i> Dashboard
-                    </a>
+                    <a href="reservation?action=list" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                    <button onclick="window.print()" class="btn btn-success no-print"><i class="fas fa-print"></i> Print</button>
                 </div>
             </div>
 
-            <!-- Hero strip -->
-            <div class="panel" style="margin-bottom:1.2rem;">
-                <div class="img-hero" style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80&fit=crop');">
-                    <div class="iho"><span class="ihl">Business Intelligence</span></div>
-                </div>
-            </div>
+            <!-- ── KPI Strip ── -->
+            <div class="stat-strip" style="grid-template-columns:repeat(4,1fr);">
 
-            <!-- KPI Stat Strip -->
-            <div class="stat-strip rpt-strip">
-
-                <div class="stat-card rpt-card gold-accent">
+                <div class="stat-card">
+                    <div class="stat-bg" style="background-image:url('https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&q=75');"></div>
                     <div class="stat-c">
-                        <span class="stat-lbl">Total Revenue</span>
-                        <span class="stat-val" style="font-size:1.5rem;">Rs. <%= formattedRevenue %></span>
-                        <span class="stat-sub">Active &amp; Completed</span>
+                        <span class="stat-lbl">Total Revenue (LKR)</span>
+                        <span class="stat-val" style="font-size:1.35rem;">Rs. <%= totalRevStr %></span>
+                        <span class="stat-sub">Active + Completed</span>
                     </div>
-                    <i class="fas fa-rupee-sign stat-ico"></i>
+                    <i class="fas fa-coins stat-ico"></i>
                 </div>
 
-                <div class="stat-card rpt-card">
+                <div class="stat-card">
+                    <div class="stat-bg" style="background-image:url('https://images.unsplash.com/photo-1540202404-1b927e27fa8b?w=400&q=75');"></div>
+                    <div class="stat-c">
+                        <span class="stat-lbl">Occupancy Rate</span>
+                        <span class="stat-val"><%= occupancyStr %>%</span>
+                        <span class="stat-sub"><%= currentOccupancy %> of 20 rooms</span>
+                    </div>
+                    <i class="fas fa-hotel stat-ico"></i>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-bg" style="background-image:url('https://images.unsplash.com/photo-1582610285985-a42d9193f2fd?w=400&q=75');"></div>
                     <div class="stat-c">
                         <span class="stat-lbl">Active Bookings</span>
                         <span class="stat-val"><%= activeReservations %></span>
-                        <span class="stat-sub" style="color:#1B5E44;">Currently active</span>
+                        <span class="stat-sub">currently active</span>
                     </div>
                     <i class="fas fa-check-circle stat-ico"></i>
                 </div>
 
-                <div class="stat-card rpt-card">
+                <div class="stat-card">
+                    <div class="stat-bg" style="background-image:url('https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=400&q=75');"></div>
                     <div class="stat-c">
-                        <span class="stat-lbl">Completed</span>
-                        <span class="stat-val"><%= completedReservations %></span>
-                        <span class="stat-sub">Check-outs done</span>
+                        <span class="stat-lbl">Total Reservations</span>
+                        <span class="stat-val"><%= totalResCount %></span>
+                        <span class="stat-sub">all-time</span>
                     </div>
-                    <i class="fas fa-flag-checkered stat-ico"></i>
-                </div>
-
-                <div class="stat-card rpt-card">
-                    <div class="stat-c">
-                        <span class="stat-lbl">Cancelled</span>
-                        <span class="stat-val" style="color:var(--coral);"><%= cancelledReservations %></span>
-                        <span class="stat-sub" style="color:var(--coral);">Lost bookings</span>
-                    </div>
-                    <i class="fas fa-times-circle stat-ico"></i>
+                    <i class="fas fa-chart-line stat-ico"></i>
                 </div>
 
             </div>
 
-            <!-- Occupancy + Revenue two-col -->
-            <div class="rpt-two-col">
-
-                <!-- Occupancy Card -->
-                <div class="panel">
-                    <div class="ph"><i class="fas fa-hotel"></i><h4>Current Occupancy</h4></div>
-                    <div class="pb" style="text-align:center; padding:2rem 1.6rem;">
-                        <div class="occ-ring-wrap">
-                            <svg class="occ-ring" viewBox="0 0 120 120">
-                                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(232,217,184,0.5)" stroke-width="12"/>
-                                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--tide)" stroke-width="12"
-                                    stroke-dasharray="<%= String.format("%.1f", occupancyRate * 3.14159) %> 314.159"
-                                    stroke-linecap="round" transform="rotate(-90 60 60)"/>
-                            </svg>
-                            <div class="occ-ring-label">
-                                <span class="occ-pct"><%= formattedOccRate %>%</span>
-                                <span class="occ-sub">Occupied</span>
-                            </div>
-                        </div>
-                        <div class="occ-detail">
-                            <div class="occ-row">
-                                <span class="legend-dot" style="background:var(--tide);"></span>
-                                <span>Occupied: <strong><%= currentOccupancy %></strong> rooms</span>
-                            </div>
-                            <div class="occ-row">
-                                <span class="legend-dot" style="background:rgba(232,217,184,0.6);"></span>
-                                <span>Available: <strong><%= 20 - currentOccupancy %></strong> rooms</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Monthly Revenue -->
-                <div class="panel">
-                    <div class="ph"><i class="fas fa-chart-line"></i><h4>Monthly Revenue (Last 6 Months)</h4></div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Month</th>
-                                <th>Revenue (LKR)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <%= monthRows.toString() %>
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-
-            <!-- Revenue by Room Type -->
+            <!-- ── Reservation Status Summary ── -->
             <div class="panel">
-                <div class="ph"><i class="fas fa-chart-pie"></i><h4>Revenue by Room Type</h4></div>
+                <div class="ph"><i class="fas fa-chart-pie"></i><h4>Reservation Status Summary</h4></div>
+                <div class="pb">
+                    <div class="status-grid">
+
+                        <div class="status-tile active-tile">
+                            <div class="st-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="st-body">
+                                <p class="st-label">Active</p>
+                                <p class="st-value"><%= activeReservations %></p>
+                            </div>
+                        </div>
+
+                        <div class="status-tile completed-tile">
+                            <div class="st-icon"><i class="fas fa-flag-checkered"></i></div>
+                            <div class="st-body">
+                                <p class="st-label">Completed</p>
+                                <p class="st-value"><%= completedReservations %></p>
+                            </div>
+                        </div>
+
+                        <div class="status-tile cancelled-tile">
+                            <div class="st-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="st-body">
+                                <p class="st-label">Cancelled</p>
+                                <p class="st-value"><%= cancelledReservations %></p>
+                            </div>
+                        </div>
+
+                        <div class="status-tile total-tile">
+                            <div class="st-icon"><i class="fas fa-list"></i></div>
+                            <div class="st-body">
+                                <p class="st-label">Total</p>
+                                <p class="st-value"><%= totalResCount %></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Revenue by Room Type (full width) ── -->
+            <div class="panel">
+                <div class="ph"><i class="fas fa-bed"></i><h4>Revenue by Room Type (LKR)</h4></div>
                 <table>
                     <thead>
-                        <tr>
-                            <th>Room Type</th>
-                            <th>Total Revenue</th>
-                            <th>Share</th>
-                        </tr>
+                        <tr><th>Room Type</th><th>Revenue</th><th>Share</th></tr>
                     </thead>
-                    <tbody>
-                        <%= revenueRows.toString() %>
-                    </tbody>
+                    <tbody><%= revRows.toString() %></tbody>
                 </table>
             </div>
 
-            <!-- Upcoming Check-ins -->
+            <!-- ── Upcoming Check-ins ── -->
             <div class="panel">
-                <div class="ph"><i class="fas fa-plane-arrival"></i><h4>Upcoming Check-ins (Next 7 Days)</h4></div>
+                <div class="ph"><i class="fas fa-plane-arrival"></i><h4>Upcoming Check-ins &mdash; Next 7 Days</h4></div>
                 <table>
                     <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Guest Name</th>
-                            <th>Room Type</th>
-                            <th>Check-in Date</th>
-                        </tr>
+                        <tr><th>#</th><th>Guest Name</th><th>Room Type</th><th>Check-In Date</th></tr>
                     </thead>
-                    <tbody>
-                        <%= checkinRows.toString() %>
-                    </tbody>
+                    <tbody><%= checkinRows.toString() %></tbody>
                 </table>
             </div>
 

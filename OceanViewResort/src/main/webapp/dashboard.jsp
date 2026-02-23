@@ -12,17 +12,35 @@
     @SuppressWarnings("unchecked")
     List<Reservation> list = (List<Reservation>) request.getAttribute("resList");
 
-    int totalBookings  = (list != null) ? list.size() : 0;
-    int occupiedCount  = Math.min(totalBookings, 20);
+    /* ── Stats ── */
+    int totalBookings    = 0;
+    int activeBookings   = 0;
+    int cancelledBookings = 0;
+
+    if (list != null) {
+        for (Reservation r : list) {
+            totalBookings++;
+            String s = r.getStatus();
+            if (s == null) s = "Active";
+            if ("Active".equals(s))    activeBookings++;
+            else if ("Cancelled".equals(s)) cancelledBookings++;
+        }
+    }
+
+    int occupiedCount  = Math.min(activeBookings, 20);
     int availableCount = 20 - occupiedCount;
 
-    /* ── Room grid HTML ── */
+    /* ── Room grid — only Active reservations mark rooms occupied ── */
     StringBuilder roomGrid = new StringBuilder();
     for (int i = 1; i <= 20; i++) {
         boolean occupied = false;
         if (list != null) {
             for (Reservation r : list) {
-                if (r.getReservationId() % 20 == i % 20) { occupied = true; break; }
+                String s = r.getStatus();
+                if (s == null) s = "Active";
+                if ("Active".equals(s) && r.getReservationId() % 20 == i % 20) {
+                    occupied = true; break;
+                }
             }
         }
         String cls  = occupied ? "oc" : "av";
@@ -33,32 +51,40 @@
         roomGrid.append("</div>");
     }
 
-    /* ── Table rows HTML ── */
+    /* ── Table rows — badge class helper for all 5 room types ── */
     StringBuilder tableRows = new StringBuilder();
     if (list != null && !list.isEmpty()) {
         for (Reservation r : list) {
             String rt = (r.getRoomType() != null) ? r.getRoomType().toLowerCase() : "";
-            String bc = rt.contains("ocean") ? "bo" : rt.contains("suite") ? "bs" : rt.contains("deluxe") ? "bd" : "bst";
+            /* bp = Presidential, bo = Ocean View, bs = Suite, bd = Deluxe, bst = Standard */
+            String bc = rt.contains("presidential") ? "bp"
+                      : rt.contains("ocean")        ? "bo"
+                      : rt.contains("suite")        ? "bs"
+                      : rt.contains("deluxe")       ? "bd"
+                      :                               "bst";
             String st = r.getStatus();
             if (st == null) st = "Active";
             String sc = "Active".equals(st) ? "bg-success" : "Cancelled".equals(st) ? "bg-danger" : "bg-info";
+
             tableRows.append("<tr>");
             tableRows.append("<td><span class='tid'>#").append(r.getReservationId()).append("</span></td>");
             tableRows.append("<td><strong>").append(r.getGuestName()).append("</strong></td>");
             tableRows.append("<td><span class='badge ").append(bc).append("'>").append(r.getRoomType()).append("</span></td>");
             tableRows.append("<td><span class='badge ").append(sc).append("'>").append(st).append("</span></td>");
             tableRows.append("<td style='color:var(--mist);font-size:0.83rem;'>").append(r.getCheckIn()).append("</td>");
-            tableRows.append("<td><a href='reservation?action=view&id=").append(r.getReservationId()).append("' class='tl'>");
-            tableRows.append("View Bill <i class='fas fa-arrow-right' style='font-size:0.58rem;'></i>");
-            tableRows.append("</a></td>");
+            tableRows.append("<td><a href='reservation?action=view&id=").append(r.getReservationId()).append("' class='tl'>View Bill <i class='fas fa-arrow-right'></i></a></td>");
             tableRows.append("</tr>");
         }
     }
 
+    /* ── Banners ── */
     String successHtml = "";
     if ("success".equals(msg)) {
         successHtml = "<div class='success-banner'><i class='fas fa-check-circle'></i> Reservation saved successfully.</div>";
+    } else if ("cancelled".equals(msg)) {
+        successHtml = "<div class='success-banner' style='background:linear-gradient(135deg,#dc3545,#c82333);'><i class='fas fa-times-circle'></i> Reservation cancelled successfully.</div>";
     }
+
     String emptyHtml = "";
     if (list == null || list.isEmpty()) {
         emptyHtml = "<p style='color:var(--mist);font-size:0.86rem;padding:1.5rem;'>No reservations yet. <a href='add_reservation.jsp' style='color:var(--tide);'>Add the first booking</a>.</p>";
@@ -91,9 +117,7 @@
                     <span class="wt">Welcome back, <%= staffName %></span>
                 </div>
                 <div class="topbar-actions">
-                    <a href="logout" class="btn btn-logout">
-                        <i class="fas fa-power-off"></i> Logout
-                    </a>
+                    <a href="logout" class="btn btn-logout"><i class="fas fa-power-off"></i> Logout</a>
                 </div>
             </div>
 
@@ -160,17 +184,13 @@
             <div class="panel">
                 <div class="ph"><i class="fas fa-hotel"></i><h4>Live Room Status</h4></div>
                 <div class="pb">
-                    <div class="room-grid">
-                        <%= roomGrid.toString() %>
-                    </div>
+                    <div class="room-grid"><%= roomGrid.toString() %></div>
                     <div class="legend">
                         <span class="legend-item">
-                            <span class="legend-dot" style="background:#1B5E44;"></span>
-                            Available (<%= availableCount %>)
+                            <span class="legend-dot" style="background:#1B5E44;"></span>Available (<%= availableCount %>)
                         </span>
                         <span class="legend-item">
-                            <span class="legend-dot" style="background:#8B2A1E;"></span>
-                            Occupied (<%= occupiedCount %>)
+                            <span class="legend-dot" style="background:#8B2A1E;"></span>Occupied (<%= occupiedCount %>)
                         </span>
                     </div>
                 </div>
@@ -185,17 +205,10 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Guest Name</th>
-                            <th>Room Type</th>
-                            <th>Status</th>
-                            <th>Check-In</th>
-                            <th>Action</th>
+                            <th>#</th><th>Guest Name</th><th>Room Type</th><th>Status</th><th>Check-In</th><th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <%= tableRows.toString() %>
-                    </tbody>
+                    <tbody><%= tableRows.toString() %></tbody>
                 </table>
                 <% } %>
             </div>
@@ -203,6 +216,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>

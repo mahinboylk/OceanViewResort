@@ -65,9 +65,7 @@
                         <form action="reservation" method="post">
                             <input type="hidden" name="action" value="add">
 
-                            <p class="section-label">
-                                <i class="fas fa-user"></i> Guest Information
-                            </p>
+                            <p class="section-label"><i class="fas fa-user"></i> Guest Information</p>
 
                             <div class="form-grid">
                                 <div class="fg span2">
@@ -90,15 +88,13 @@
                                         <option value="Deluxe">Deluxe &mdash; Rs. 35,000 / night</option>
                                         <option value="Suite">Suite &mdash; Rs. 55,000 / night</option>
                                         <option value="Ocean View">Ocean View &mdash; Rs. 75,000 / night</option>
+                                        <option value="Presidential Suite">Presidential Suite &mdash; Rs. 150,000 / night</option>
                                     </select>
                                 </div>
                             </div>
 
                             <hr class="section-hr">
-
-                            <p class="section-label">
-                                <i class="fas fa-calendar-alt"></i> Stay Dates
-                            </p>
+                            <p class="section-label"><i class="fas fa-calendar-alt"></i> Stay Dates</p>
 
                             <div class="form-grid">
                                 <div class="fg">
@@ -124,11 +120,24 @@
                     </div>
                 </div>
 
-                <!-- Room Type Visual Panel -->
+                <!-- Room Type Visual Panel — all 5 types -->
                 <div>
                     <div class="panel">
-                        <div class="ph"><i class="fas fa-bed"></i><h4>Room Types</h4></div>
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600&q=78&fit=crop'); height:110px;">
+                        <div class="ph"><i class="fas fa-bed"></i><h4>Room Types &amp; Rates (LKR)</h4></div>
+
+                        <!-- Presidential Suite — top billing, tallest card -->
+                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=78&fit=crop'); height:120px;">
+                            <div class="rtc-overlay">
+                                <div>
+                                    <div class="rtc-label" style="color:var(--gold);">
+                                        <i class="fas fa-crown" style="margin-right:5px; font-size:0.7rem;"></i>Presidential Suite
+                                    </div>
+                                    <div class="rtc-price">Rs. 150,000<small>/night</small></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600&q=78&fit=crop'); height:100px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label">Ocean View</div>
@@ -136,7 +145,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&q=78&fit=crop'); height:90px;">
+
+                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&q=78&fit=crop'); height:85px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label">Suite</div>
@@ -144,7 +154,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=78&fit=crop'); height:80px;">
+
+                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=78&fit=crop'); height:75px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label">Deluxe</div>
@@ -152,7 +163,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=78&fit=crop'); height:70px;">
+
+                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=78&fit=crop'); height:65px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label">Standard</div>
@@ -160,6 +172,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -167,6 +180,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>

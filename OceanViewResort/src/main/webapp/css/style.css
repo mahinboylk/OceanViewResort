@@ -40,6 +40,8 @@ body[data-page="dashboard"]   { background-image: url('https://images.unsplash.c
 body[data-page="reservation"] { background-image: url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1920&q=85&fit=crop'); }
 body[data-page="view"]        { background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=85&fit=crop'); }
 body[data-page="help"]        { background-image: url('https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1920&q=85&fit=crop'); }
+body[data-page="reports"]     { background-image: url('https://images.unsplash.com/photo-1551882547-ff40c63fe2e2?w=1920&q=85&fit=crop'); }
+body[data-page="home"]        { background-image: url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1920&q=85&fit=crop'); }
 body[data-page="reports"]     { background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=85&fit=crop'); }
 
 /* ═══════════════════════════════════════════════
@@ -51,6 +53,8 @@ body[data-page="dashboard"]   .page-overlay { background: rgba(5,17,28,0.53); }
 body[data-page="reservation"] .page-overlay { background: rgba(4,14,24,0.57); }
 body[data-page="view"]        .page-overlay { background: rgba(4,14,24,0.50); }
 body[data-page="help"]        .page-overlay { background: rgba(4,14,24,0.55); }
+body[data-page="reports"]     .page-overlay { background: rgba(4,14,24,0.55); }
+body[data-page="home"]        .page-overlay { background: rgba(4,14,24,0.52); }
 body[data-page="reports"]     .page-overlay { background: rgba(4,14,24,0.55); }
 
 /* ═══════════════════════════════════════════════
@@ -252,6 +256,7 @@ tbody tr:hover { background: rgba(245,236,215,0.5); }
 tbody td { padding: 13px 16px; font-size: 0.85rem; color: var(--ink); }
 .tid  { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; color: var(--mist); }
 .badge{ display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.bp        { background: rgba(196,154,60,0.15); color: #7B5900; border: 1px solid rgba(196,154,60,0.35); } /* Presidential Suite — gold */
 .bo        { background: rgba(11,61,94,0.1); color: var(--ocean); }
 .bs        { background: #FEF3D0; color: #7A5400; }
 .bd        { background: #E8F5EE; color: #1B5E44; }
@@ -322,6 +327,85 @@ tbody td { padding: 13px 16px; font-size: 0.85rem; color: var(--ink); }
 .pct-bar       { background: linear-gradient(90deg, var(--tide), var(--ocean)); height: 6px; border-radius: 20px; min-width: 2px; }
 
 /* ═══════════════════════════════════════════════
+   USER PILL (topbar — home page)
+═══════════════════════════════════════════════ */
+.user-pill { display: flex; align-items: center; gap: 8px; }
+.user-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--coral)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.82rem; flex-shrink: 0; }
+.user-name-sm   { font-size: 0.78rem; color: rgba(245,236,215,0.75); font-weight: 500; }
+
+/* ═══════════════════════════════════════════════
+   HOME STATS STRIP
+═══════════════════════════════════════════════ */
+.home-stats     { display: flex; align-items: center; gap: 0; border-top: 1px solid rgba(232,217,184,0.4); }
+.home-stat      { flex: 1; padding: 1.2rem 1.4rem; text-align: center; }
+.home-stat-div  { width: 1px; height: 40px; background: rgba(232,217,184,0.4); flex-shrink: 0; }
+.hs-val         { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300; color: var(--ocean); display: block; line-height: 1; }
+.hs-lbl         { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mist); display: block; margin-top: 4px; }
+
+/* ═══════════════════════════════════════════════
+   MENU CARD SUB-TEXT
+═══════════════════════════════════════════════ */
+.mc-sub { font-size: 0.6rem; color: var(--mist); font-weight: 400; letter-spacing: 0.04em; text-transform: none; position: relative; }
+
+/* ═══════════════════════════════════════════════
+   BUTTON — DANGER
+═══════════════════════════════════════════════ */
+.btn-danger  { background: rgba(217,105,78,0.15); color: var(--coral); border: 1px solid rgba(217,105,78,0.4); }
+.btn-danger:hover { background: var(--coral); color: white; transform: translateY(-1px); }
+
+/* ═══════════════════════════════════════════════
+   ALERT BANNERS (view_reservation status)
+═══════════════════════════════════════════════ */
+.alert-banner { padding: 12px 18px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.alert-cancelled { background: #FEE8E4; border: 1px solid #F8C3BA; border-left: 4px solid var(--coral); color: #8B2A1E; }
+.alert-completed { background: #E8F5EE; border: 1px solid #B2DFCC; border-left: 4px solid #1B5E44; color: #1B5E44; }
+
+/* ═══════════════════════════════════════════════
+   RECEIPT TOTAL — LKR fits wider text
+═══════════════════════════════════════════════ */
+.tam { font-family: 'Cormorant Garamond', serif; font-size: 1.65rem; font-weight: 300; color: var(--gold); letter-spacing: 0.02em; }
+
+/* ═══════════════════════════════════════════════
+   REPORTS — Two-column layout
+═══════════════════════════════════════════════ */
+.report-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+
+/* ═══════════════════════════════════════════════
+   REPORTS — Status Tiles
+═══════════════════════════════════════════════ */
+.status-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+.status-tile { border-radius: 8px; padding: 1.2rem 1.4rem; display: flex; align-items: center; gap: 14px; border: 1px solid rgba(255,255,255,0.5); }
+.st-icon { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.st-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 4px; }
+.st-value { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; line-height: 1; }
+
+.active-tile    { background: rgba(27,94,68,0.10);   }
+.active-tile    .st-icon  { background: rgba(27,94,68,0.18);   color: #1B5E44; }
+.active-tile    .st-label { color: #1B5E44; }
+.active-tile    .st-value { color: #1B5E44; }
+
+.completed-tile { background: rgba(11,61,94,0.10);   }
+.completed-tile .st-icon  { background: rgba(11,61,94,0.18);   color: var(--ocean); }
+.completed-tile .st-label { color: var(--ocean-lt); }
+.completed-tile .st-value { color: var(--ocean); }
+
+.cancelled-tile { background: rgba(139,42,30,0.10);  }
+.cancelled-tile .st-icon  { background: rgba(139,42,30,0.18);  color: #8B2A1E; }
+.cancelled-tile .st-label { color: #8B2A1E; }
+.cancelled-tile .st-value { color: #8B2A1E; }
+
+.total-tile     { background: rgba(196,154,60,0.10); }
+.total-tile     .st-icon  { background: rgba(196,154,60,0.18); color: var(--gold); }
+.total-tile     .st-label { color: var(--gold); }
+.total-tile     .st-value { color: var(--ocean); }
+
+/* ═══════════════════════════════════════════════
+   REPORTS — Progress Bar
+═══════════════════════════════════════════════ */
+.prog-wrap { display: inline-block; vertical-align: middle; width: 80px; height: 7px; background: rgba(232,217,184,0.6); border-radius: 4px; overflow: hidden; }
+.prog-bar  { height: 100%; background: linear-gradient(90deg, var(--tide), var(--ocean)); border-radius: 4px; transition: width 0.5s ease; }
+
+/* ═══════════════════════════════════════════════
    PRINT
 ═══════════════════════════════════════════════ */
 @media print {
@@ -350,9 +434,10 @@ tbody td { padding: 13px 16px; font-size: 0.85rem; color: var(--ink); }
     .form-grid   { grid-template-columns: 1fr; }
     .fg.span2    { grid-column: span 1; }
     .inner-shell { padding: 16px 16px 60px; }
-    .rpt-strip   { grid-template-columns: repeat(2,1fr); }
+    .report-two-col { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: repeat(2,1fr); }
 }
 @media (max-width: 480px) {
     .grid-menu   { grid-template-columns: repeat(2,1fr); }
-    .rpt-strip   { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: 1fr; }
 }
