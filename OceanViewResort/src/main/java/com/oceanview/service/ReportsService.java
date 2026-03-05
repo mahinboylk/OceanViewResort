@@ -45,6 +45,12 @@ public interface ReportsService {
     double getOccupancyRate() throws Exception;
     
     /**
+     * Get booking rate percentage (active reservations / total rooms)
+     * @return Booking rate (0-100)
+     */
+    double getBookingRate() throws Exception;
+    
+    /**
      * Get upcoming check-ins
      * @return List of check-in details
      */

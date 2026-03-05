@@ -44,4 +44,14 @@ public interface ReservationDAO {
      * @return true if available, false if booked
      */
     boolean isRoomAvailable(String roomType, Date checkIn, Date checkOut) throws Exception;
+    
+    /**
+     * Search reservations with multiple filter criteria
+     * @param keyword Search keyword (guest name, contact, or reservation ID)
+     * @param roomType Filter by room type (null for all)
+     * @param status Filter by status (null for all)
+     * @param checkIn Filter by check-in date (null for all)
+     * @return List of matching reservations
+     */
+    List<Reservation> search(String keyword, String roomType, String status, Date checkIn) throws Exception;
 }

@@ -13,8 +13,8 @@
     List<Reservation> list = (List<Reservation>) request.getAttribute("resList");
 
     /* ── Stats ── */
-    int totalBookings    = 0;
-    int activeBookings   = 0;
+    int totalBookings     = 0;
+    int activeBookings    = 0;
     int cancelledBookings = 0;
 
     if (list != null) {
@@ -22,7 +22,7 @@
             totalBookings++;
             String s = r.getStatus();
             if (s == null) s = "Active";
-            if ("Active".equals(s))    activeBookings++;
+            if ("Active".equals(s))         activeBookings++;
             else if ("Cancelled".equals(s)) cancelledBookings++;
         }
     }
@@ -30,7 +30,7 @@
     int occupiedCount  = Math.min(activeBookings, 20);
     int availableCount = 20 - occupiedCount;
 
-    /* ── Room grid — only Active reservations mark rooms occupied ── */
+    /* ── Room grid ── */
     StringBuilder roomGrid = new StringBuilder();
     for (int i = 1; i <= 20; i++) {
         boolean occupied = false;
@@ -51,12 +51,12 @@
         roomGrid.append("</div>");
     }
 
-    /* ── Table rows — badge class helper for all 5 room types ── */
+    /* ── Table rows — badge classes for all 5 room types ── */
     StringBuilder tableRows = new StringBuilder();
     if (list != null && !list.isEmpty()) {
         for (Reservation r : list) {
             String rt = (r.getRoomType() != null) ? r.getRoomType().toLowerCase() : "";
-            /* bp = Presidential, bo = Ocean View, bs = Suite, bd = Deluxe, bst = Standard */
+            /* presidential must be checked BEFORE suite — name contains "suite" */
             String bc = rt.contains("presidential") ? "bp"
                       : rt.contains("ocean")        ? "bo"
                       : rt.contains("suite")        ? "bs"
@@ -64,8 +64,9 @@
                       :                               "bst";
             String st = r.getStatus();
             if (st == null) st = "Active";
-            String sc = "Active".equals(st) ? "bg-success" : "Cancelled".equals(st) ? "bg-danger" : "bg-info";
-
+            String sc = "Active".equals(st)    ? "bg-success"
+                      : "Cancelled".equals(st) ? "bg-danger"
+                      :                          "bg-info";
             tableRows.append("<tr>");
             tableRows.append("<td><span class='tid'>#").append(r.getReservationId()).append("</span></td>");
             tableRows.append("<td><strong>").append(r.getGuestName()).append("</strong></td>");
@@ -80,9 +81,9 @@
     /* ── Banners ── */
     String successHtml = "";
     if ("success".equals(msg)) {
-        successHtml = "<div class='success-banner'><i class='fas fa-check-circle'></i> Reservation saved successfully.</div>";
+        successHtml = "<div class='success-banner'><i class='fas fa-check-circle'></i>&nbsp; Reservation saved successfully.</div>";
     } else if ("cancelled".equals(msg)) {
-        successHtml = "<div class='success-banner' style='background:linear-gradient(135deg,#dc3545,#c82333);'><i class='fas fa-times-circle'></i> Reservation cancelled successfully.</div>";
+        successHtml = "<div class='success-banner' style='background:linear-gradient(135deg,#8B2A1E,#b03020);'><i class='fas fa-times-circle'></i>&nbsp; Reservation cancelled successfully.</div>";
     }
 
     String emptyHtml = "";
@@ -152,32 +153,53 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="grid-menu">
+            <%--
+                7 action cards — auto-fit grid handles any count, wraps cleanly on mobile.
+                Cards: New Booking, All Bookings, Search, Reports, AI Assistant, User Guide, Exit
+            --%>
+            <div class="grid-menu" style="grid-template-columns:repeat(auto-fit, minmax(120px,1fr));">
+
                 <a href="add_reservation.jsp" class="menu-card">
                     <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1551882547-ff40c63fe2e2?w=400&q=75');"></div>
                     <div class="ci"><i class="fas fa-user-plus"></i></div>
                     <span>New Booking</span>
                 </a>
+
                 <a href="reservation?action=list" class="menu-card">
                     <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=400&q=75');"></div>
                     <div class="ci"><i class="fas fa-list-ul"></i></div>
                     <span>All Bookings</span>
                 </a>
+
+                <a href="search.jsp" class="menu-card">
+                    <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&q=75');"></div>
+                    <div class="ci"><i class="fas fa-search"></i></div>
+                    <span>Search</span>
+                </a>
+
                 <a href="reports" class="menu-card">
                     <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=75');"></div>
                     <div class="ci"><i class="fas fa-chart-pie"></i></div>
                     <span>Reports</span>
                 </a>
+
+                <a href="chat.jsp" class="menu-card">
+                    <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=400&q=75');"></div>
+                    <div class="ci"><i class="fas fa-robot"></i></div>
+                    <span>AI Assistant</span>
+                </a>
+
                 <a href="help.jsp" class="menu-card">
                     <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1473496169851-1ef9a9e0fc48?w=400&q=75');"></div>
                     <div class="ci"><i class="fas fa-book-open"></i></div>
                     <span>User Guide</span>
                 </a>
+
                 <a href="logout" class="menu-card danger">
                     <div class="ci"><i class="fas fa-door-open"></i></div>
-                    <span>Exit System</span>
+                    <span>Exit</span>
                 </a>
+
             </div>
 
             <!-- Room Status Grid -->
@@ -202,19 +224,27 @@
                 <% if (list == null || list.isEmpty()) { %>
                     <%= emptyHtml %>
                 <% } else { %>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th><th>Guest Name</th><th>Room Type</th><th>Status</th><th>Check-In</th><th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody><%= tableRows.toString() %></tbody>
-                </table>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Guest Name</th>
+                                <th>Room Type</th>
+                                <th>Status</th>
+                                <th>Check-In</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody><%= tableRows.toString() %></tbody>
+                    </table>
+                </div>
                 <% } %>
             </div>
 
         </div>
     </div>
 </div>
+
 </body>
 </html>

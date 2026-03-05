@@ -1,0 +1,12 @@
+# OpenRouter API Configuration
+# Copy this file to config.properties and fill in your API key
+# Get your key at: https://openrouter.ai/keys
+openrouter.api.key=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
+openrouter.api.url=https://openrouter.ai/api/v1/chat/completions
+# Using Meta Llama 3.1 8B Instruct (free model)
+openrouter.model=mistralai/mistral-7b-instruct-v0.3
+
+# Application Settings
+app.name=Ocean View Resort
+app.support.email=support@oceanviewresort.lk
+app.url=http://localhost:8080/OceanViewResort

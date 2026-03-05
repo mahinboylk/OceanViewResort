@@ -61,6 +61,7 @@ public class ReportsServlet extends HttpServlet {
             int    completedReservations     = reportsService.getCompletedReservationCount();
             int    currentOccupancy          = reportsService.getCurrentOccupancy();
             double occupancyRate             = reportsService.getOccupancyRate();
+            double bookingRate               = reportsService.getBookingRate();
             List<Map<String, Object>> upcomingCheckins  = reportsService.getUpcomingCheckins();
             Map<String, Double>       revenueByRoomType = reportsService.getRevenueByRoomType();
 
@@ -71,6 +72,7 @@ public class ReportsServlet extends HttpServlet {
             request.setAttribute("completedReservations", completedReservations);
             request.setAttribute("currentOccupancy",      currentOccupancy);
             request.setAttribute("occupancyRate",         occupancyRate);
+            request.setAttribute("bookingRate",           bookingRate);
             request.setAttribute("upcomingCheckins",      upcomingCheckins);
             request.setAttribute("revenueByRoomType",     revenueByRoomType);
 

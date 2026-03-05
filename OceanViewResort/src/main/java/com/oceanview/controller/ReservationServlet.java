@@ -64,7 +64,7 @@ public class ReservationServlet extends HttpServlet {
         }
     }
 
-    // GET → view | list | cancel
+    // GET → view | list | cancel | search
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -82,6 +82,8 @@ public class ReservationServlet extends HttpServlet {
         } else if ("cancel".equals(action)) {
             // Handle cancel via GET (from view_reservation.jsp link)
             cancelReservation(request, response);
+        } else if ("search".equals(action)) {
+            searchReservations(request, response);
         } else {
             response.sendRedirect("reservation?action=list");
         }
@@ -94,12 +96,14 @@ public class ReservationServlet extends HttpServlet {
     private void addReservation(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        String guestName   = request.getParameter("guestName");
-        String address     = request.getParameter("address");
-        String contact     = request.getParameter("contact");
-        String roomType    = request.getParameter("roomType");
-        String checkInStr  = request.getParameter("checkIn");
-        String checkOutStr = request.getParameter("checkOut");
+        String guestName    = request.getParameter("guestName");
+        String email        = request.getParameter("email");
+        String nicPassport  = request.getParameter("nicPassport");
+        String address      = request.getParameter("address");
+        String contact      = request.getParameter("contact");
+        String roomType     = request.getParameter("roomType");
+        String checkInStr   = request.getParameter("checkIn");
+        String checkOutStr  = request.getParameter("checkOut");
 
         // Validate required fields
         if (guestName == null || guestName.isBlank()
@@ -116,6 +120,8 @@ public class ReservationServlet extends HttpServlet {
             // Create reservation object
             Reservation reservation = new Reservation();
             reservation.setGuestName(guestName.trim());
+            reservation.setEmail(email != null ? email.trim() : null);
+            reservation.setNicPassport(nicPassport != null ? nicPassport.trim() : null);
             reservation.setAddress(address);
             reservation.setContactNumber(contact);
             reservation.setRoomType(roomType);
@@ -217,6 +223,42 @@ public class ReservationServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("resList", null);
             request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+        }
+    }
+
+    /**
+     * Search reservations with filters
+     * Single Responsibility: Only handles search reservations request
+     */
+    private void searchReservations(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String keyword = request.getParameter("keyword");
+        String roomType = request.getParameter("roomType");
+        String status = request.getParameter("status");
+        String checkInStr = request.getParameter("checkIn");
+        
+        Date checkIn = null;
+        if (checkInStr != null && !checkInStr.trim().isEmpty()) {
+            try {
+                checkIn = Date.valueOf(checkInStr);
+            } catch (IllegalArgumentException e) {
+                // Invalid date format, ignore
+            }
+        }
+
+        try {
+            List<Reservation> results = reservationService.searchReservations(keyword, roomType, status, checkIn);
+            request.setAttribute("searchResults", results);
+            request.setAttribute("keyword", keyword);
+            request.setAttribute("roomType", roomType);
+            request.setAttribute("status", status);
+            request.setAttribute("checkIn", checkInStr);
+            request.getRequestDispatcher("search.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("searchResults", null);
+            request.getRequestDispatcher("search.jsp").forward(request, response);
         }
     }
 

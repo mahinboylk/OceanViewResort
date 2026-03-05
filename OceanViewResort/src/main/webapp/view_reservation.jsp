@@ -82,23 +82,22 @@
             <!-- Receipt Card -->
             <div class="receipt-card">
 
-                <!-- Photo header — .rph in style.css has the Unsplash background image + overlay -->
+                <!-- Photo header — compact: resort name + location only -->
                 <div class="rph">
                     <div class="rhc">
                         <p class="ra">Galle, Sri Lanka &nbsp;&middot;&nbsp; oceanviewresort.lk</p>
                         <div class="rgl"></div>
                         <p class="rr">Ocean View Resort</p>
-                        <div class="rgl"></div>
                     </div>
                 </div>
 
                 <!-- Detail rows -->
                 <div class="rb2">
-                    <p class="rid">Booking Receipt &nbsp;#<%= res.getReservationId() %></p>
 
-                    <div class="dr">
-                        <span class="dl"><i class="fas fa-info-circle" style="width:14px;"></i> Status</span>
-                        <span class="dv">
+                    <!-- Receipt ID + Status — compact single row header -->
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.75rem; padding-bottom:0.5rem; border-bottom:2px solid rgba(196,154,60,0.25);">
+                        <p class="rid" style="margin-bottom:0;">Booking Receipt &nbsp;#<%= res.getReservationId() %></p>
+                        <span>
                             <% if ("Active".equals(status)) { %>
                                 <span class="badge bo">Active</span>
                             <% } else if ("Cancelled".equals(status)) { %>
@@ -106,7 +105,7 @@
                             <% } else if ("Completed".equals(status)) { %>
                                 <span class="badge bd">Completed</span>
                             <% } else { %>
-                                <%= status %>
+                                <span class="badge bst"><%= status %></span>
                             <% } %>
                         </span>
                     </div>
@@ -144,8 +143,8 @@
                 <div class="tb">
                     <div>
                         <p class="tbl">Total Payable</p>
-                        <p style="font-size:0.65rem; color:rgba(245,236,215,0.5); margin-top:2px;">
-                            Includes all taxes &amp; service charges
+                        <p style="font-size:0.6rem; color:rgba(245,236,215,0.45); margin-top:1px;">
+                            Incl. all taxes &amp; service charges
                         </p>
                     </div>
                     <span class="tam">LKR <%= total %></span>

@@ -27,24 +27,16 @@ public class ReportsDAOImpl implements ReportsDAO {
     @Override
     public double getTotalRevenue() throws Exception {
         double total = 0;
-        String sql = "SELECT r.room_type, r.check_in, r.check_out " +
-                     "FROM reservations r " +
-                     "WHERE r.status IN ('Active', 'Completed')";
+        // Use stored total_amount from database
+        String sql = "SELECT SUM(total_amount) as total FROM reservations " +
+                     "WHERE status IN ('Active', 'Completed')";
         
         try (Connection conn = DBConnection.getInstance().getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
-            while (rs.next()) {
-                String roomType = rs.getString("room_type");
-                Date checkIn = rs.getDate("check_in");
-                Date checkOut = rs.getDate("check_out");
-                
-                if (checkIn != null && checkOut != null) {
-                    long diff = checkOut.getTime() - checkIn.getTime();
-                    long nights = Math.max(1, diff / (1000L * 60 * 60 * 24));
-                    total += nights * getRoomRate(roomType);
-                }
+            if (rs.next()) {
+                total = rs.getDouble("total");
             }
         }
         return total;
@@ -114,13 +106,8 @@ public class ReportsDAOImpl implements ReportsDAO {
     @Override
     public Map<String, Double> getRevenueByRoomType() throws Exception {
         Map<String, Double> map = new HashMap<>();
-        String sql = "SELECT room_type, " +
-                     "SUM(CASE " +
-                     "    WHEN room_type = 'Ocean View' THEN DATEDIFF(check_out, check_in) * 300 " +
-                     "    WHEN room_type = 'Suite' THEN DATEDIFF(check_out, check_in) * 250 " +
-                     "    WHEN room_type = 'Deluxe' THEN DATEDIFF(check_out, check_in) * 150 " +
-                     "    ELSE DATEDIFF(check_out, check_in) * 100 " +
-                     "END) as revenue " +
+        // Use stored total_amount from database
+        String sql = "SELECT room_type, SUM(total_amount) as revenue " +
                      "FROM reservations " +
                      "WHERE status IN ('Active', 'Completed') " +
                      "GROUP BY room_type";
@@ -138,19 +125,5 @@ public class ReportsDAOImpl implements ReportsDAO {
             }
         }
         return map;
-    }
-    
-    /**
-     * Get room rate based on type
-     * Single Responsibility: Only handles rate lookup
-     */
-    private double getRoomRate(String type) {
-        if (type == null) return 100.00;
-        switch (type.toLowerCase().trim()) {
-            case "ocean view": return 300.00;
-            case "suite":      return 250.00;
-            case "deluxe":     return 150.00;
-            default:           return 100.00;
-        }
     }
 }

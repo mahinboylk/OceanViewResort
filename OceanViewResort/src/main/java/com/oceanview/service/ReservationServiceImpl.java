@@ -202,4 +202,9 @@ public class ReservationServiceImpl implements ReservationService, ReservationSu
     public double calculateTotal(String roomType, Date checkIn, Date checkOut) {
         return pricingStrategy.calculatePrice(roomType, checkIn, checkOut);
     }
+
+    @Override
+    public List<Reservation> searchReservations(String keyword, String roomType, String status, Date checkIn) throws Exception {
+        return reservationDAO.search(keyword, roomType, status, checkIn);
+    }
 }

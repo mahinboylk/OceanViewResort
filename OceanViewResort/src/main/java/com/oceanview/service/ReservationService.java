@@ -58,4 +58,15 @@ public interface ReservationService {
      * @return The total amount
      */
     double calculateTotal(String roomType, Date checkIn, Date checkOut);
+    
+    /**
+     * Search reservations with multiple filter criteria
+     * @param keyword Search keyword (guest name, contact, or reservation ID)
+     * @param roomType Filter by room type (null for all)
+     * @param status Filter by status (null for all)
+     * @param checkIn Filter by check-in date (null for all)
+     * @return List of matching reservations
+     * @throws Exception if database error
+     */
+    List<Reservation> searchReservations(String keyword, String roomType, String status, Date checkIn) throws Exception;
 }

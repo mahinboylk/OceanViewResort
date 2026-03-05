@@ -44,17 +44,20 @@
 
             <!-- Welcome Hero Panel -->
             <div class="panel">
-                <div class="img-hero" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=85&fit=crop'); height:220px;">
+                <div class="img-hero"
+                     style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=85&fit=crop'); height:220px;">
                     <div class="iho" style="flex-direction:column; align-items:flex-start; gap:6px; padding:1.8rem 2rem;">
                         <span style="font-size:0.65rem; font-weight:800; letter-spacing:0.28em; text-transform:uppercase; color:var(--gold);">
                             <i class="fas fa-map-marker-alt" style="margin-right:5px;"></i>Galle, Sri Lanka
                         </span>
                         <span class="ihl" style="font-size:2.2rem;">Welcome back, <%= username %></span>
-                        <span style="font-size:0.82rem; color:rgba(245,236,215,0.7); letter-spacing:0.08em;">Manage your hotel operations from one place</span>
+                        <span style="font-size:0.82rem; color:rgba(245,236,215,0.75); letter-spacing:0.08em;">
+                            Manage your hotel operations from one place
+                        </span>
                     </div>
                 </div>
 
-                <!-- Quick Stats — updated to 5 room types -->
+                <!-- Quick Stats -->
                 <div class="pb" style="padding-bottom:0;">
                     <div class="home-stats">
                         <div class="home-stat">
@@ -80,8 +83,12 @@
                 </div>
             </div>
 
-            <!-- Navigation Cards -->
-            <div class="grid-menu" style="grid-template-columns:repeat(4,1fr);">
+            <%--
+                BUG FIX: Was repeat(5,1fr) with 6 cards — 6th card (User Guide) wrapped to a new row.
+                Fix: auto-fit with min 130px handles 6 or any number of cards on one row, and collapses
+                gracefully on smaller screens without breaking layout.
+            --%>
+            <div class="grid-menu" style="grid-template-columns:repeat(auto-fit, minmax(130px,1fr));">
 
                 <a href="reservation?action=list" class="menu-card">
                     <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=400&q=75');"></div>
@@ -97,11 +104,25 @@
                     <small class="mc-sub">Create reservation</small>
                 </a>
 
+                <a href="search.jsp" class="menu-card">
+                    <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&q=75');"></div>
+                    <div class="ci"><i class="fas fa-search"></i></div>
+                    <span>Search</span>
+                    <small class="mc-sub">Find reservations</small>
+                </a>
+
                 <a href="reports" class="menu-card">
                     <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=75');"></div>
                     <div class="ci"><i class="fas fa-chart-pie"></i></div>
                     <span>Reports</span>
                     <small class="mc-sub">Analytics &amp; insights</small>
+                </a>
+
+                <a href="chat.jsp" class="menu-card">
+                    <div class="mc-bg" style="background-image:url('https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=400&q=75');"></div>
+                    <div class="ci"><i class="fas fa-robot"></i></div>
+                    <span>AI Assistant</span>
+                    <small class="mc-sub">24/7 chat support</small>
                 </a>
 
                 <a href="help.jsp" class="menu-card">
@@ -117,10 +138,10 @@
             <div class="panel">
                 <div class="ph"><i class="fas fa-bed"></i><h4>Room Rates &mdash; Quick Reference (LKR)</h4></div>
                 <div class="pb" style="padding:0;">
-                    <div style="display:grid; grid-template-columns:repeat(5,1fr);">
+                    <div class="room-rate-grid" style="display:grid; grid-template-columns:repeat(5,1fr);">
 
-                        <!-- Presidential Suite — gold accent -->
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=78&fit=crop'); height:120px;">
+                        <div class="room-type-card"
+                             style="background-image:url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=78&fit=crop'); height:120px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label" style="color:var(--gold);">
@@ -131,7 +152,8 @@
                             </div>
                         </div>
 
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600&q=78&fit=crop'); height:120px;">
+                        <div class="room-type-card"
+                             style="background-image:url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600&q=78&fit=crop'); height:120px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label">Ocean View</div>
@@ -140,7 +162,8 @@
                             </div>
                         </div>
 
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&q=78&fit=crop'); height:120px;">
+                        <div class="room-type-card"
+                             style="background-image:url('https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&q=78&fit=crop'); height:120px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label">Suite</div>
@@ -149,7 +172,8 @@
                             </div>
                         </div>
 
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=78&fit=crop'); height:120px;">
+                        <div class="room-type-card"
+                             style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=78&fit=crop'); height:120px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label">Deluxe</div>
@@ -158,7 +182,8 @@
                             </div>
                         </div>
 
-                        <div class="room-type-card" style="background-image:url('https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=78&fit=crop'); height:120px;">
+                        <div class="room-type-card"
+                             style="background-image:url('https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=78&fit=crop'); height:120px;">
                             <div class="rtc-overlay">
                                 <div>
                                     <div class="rtc-label">Standard</div>

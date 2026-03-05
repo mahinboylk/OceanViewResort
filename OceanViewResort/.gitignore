@@ -23,6 +23,10 @@ servers/
 **/DBConnection.java
 # Or better - use environment variables
 
+# API keys and sensitive configuration (SECURITY!)
+**/config.properties
+!**/config.properties.example
+
 # Build directory
 build/
 bin/
@@ -35,3 +39,4 @@ bin/
 # OS files
 .DS_Store
 Thumbs.db
+/target/

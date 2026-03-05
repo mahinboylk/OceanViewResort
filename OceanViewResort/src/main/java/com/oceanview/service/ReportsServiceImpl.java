@@ -64,6 +64,12 @@ public class ReportsServiceImpl implements ReportsService {
     }
 
     @Override
+    public double getBookingRate() throws Exception {
+        int activeReservations = getActiveReservationCount();
+        return (double) activeReservations / TOTAL_ROOMS * 100;
+    }
+
+    @Override
     public List<Map<String, Object>> getUpcomingCheckins() throws Exception {
         return reportsDAO.getUpcomingCheckins();
     }
