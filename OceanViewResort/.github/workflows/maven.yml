@@ -21,16 +21,16 @@ jobs:
         cache: 'maven'
     
     - name: Build with Maven
-      run: mvn clean compile
+      run: mvn -f OceanViewResort/pom.xml clean compile
     
     - name: Run tests
-      run: mvn test
+      run: mvn -f OceanViewResort/pom.xml test
     
     - name: Package
-      run: mvn package -DskipTests
+      run: mvn -f OceanViewResort/pom.xml package -DskipTests
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: package
-        path: target/*.war
+        path: OceanViewResort/target/*.war
