@@ -20,7 +20,8 @@ servers/
 .tomcat/
 
 # Database credentials (SECURITY!)
-**/DBConnection.java
+# DBConnection.java - uncomment if needed for local development
+# **/DBConnection.java
 # Or better - use environment variables
 
 # API keys and sensitive configuration (SECURITY!)
