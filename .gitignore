@@ -1,0 +1,42 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# Eclipse files
+.settings/
+.project
+.classpath
+.target/
+
+# Tomcat server files
+servers/
+.tomcat/
+
+# Database credentials (SECURITY!)
+**/DBConnection.java
+# Or better - use environment variables
+
+# API keys and sensitive configuration (SECURITY!)
+**/config.properties
+!**/config.properties.example
+
+# Build directory
+build/
+bin/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+/target/
