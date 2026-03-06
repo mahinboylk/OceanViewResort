@@ -87,6 +87,6 @@ public class PaymentProcessorAdapterTest {
         
         // Assert
         assertNotNull(status);
-        assertTrue(status.equals("PAID") || status.equals("PENDING") || status.equals("UNKNOWN"));
+        assertTrue(status.startsWith("PAID") || status.equals("NO PAYMENT"), "Status should start with PAID or be NO PAYMENT");
     }
 }

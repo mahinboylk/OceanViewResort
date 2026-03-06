@@ -137,7 +137,7 @@ public class ReservationServiceImpl implements ReservationService, ReservationSu
         if (!reservationDAO.isRoomAvailable(reservation.getRoomType(), 
                                             reservation.getCheckIn(), 
                                             reservation.getCheckOut())) {
-            throw new IllegalStateException("Room is not available for the selected dates");
+            return false;
         }
         
         // Set default status

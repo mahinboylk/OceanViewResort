@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 import java.sql.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,19 +19,24 @@ public class LoggingObserverTest {
     
     private LoggingObserver loggingObserver;
     private ByteArrayOutputStream outputStream;
-    private PrintStream originalOut;
+    private Handler logHandler;
+    private Logger logger;
     
     @BeforeEach
     void setUp() {
         loggingObserver = new LoggingObserver();
         outputStream = new ByteArrayOutputStream();
-        originalOut = System.out;
-        System.setOut(new PrintStream(outputStream));
-    }
-    
-    @BeforeEach
-    void tearDown() {
-        System.setOut(originalOut);
+        
+        // Get the logger and add a custom handler to capture output
+        logger = Logger.getLogger(LoggingObserver.class.getName());
+        logHandler = new StreamHandler(outputStream, new java.util.logging.SimpleFormatter()) {
+            @Override
+            public void publish(java.util.logging.LogRecord record) {
+                super.publish(record);
+                flush();
+            }
+        };
+        logger.addHandler(logHandler);
     }
     
     // Test 1: Log reservation created event
